@@ -101,3 +101,22 @@ export const restockVehicle = async (id, amount) => {
     });
     return handleResponse(res);
 };
+
+export const updateVehicle = async (id, vehicle) => {
+    const res = await fetch(`${BASE_URL}/vehicles/${id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify(vehicle)
+    });
+    return handleResponse(res);
+};
+
+export const deleteVehicle = async (id) => {
+    const res = await fetch(`${BASE_URL}/vehicles/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders()
+    });
+    // For 204 No Content, handleResponse needs to handle empty body
+    if (res.status === 204) return null;
+    return handleResponse(res);
+};

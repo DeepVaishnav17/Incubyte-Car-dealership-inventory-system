@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getVehicles, searchVehicles, addVehicle, purchaseVehicle, restockVehicle, getUserRole } from '../api';
+import { getVehicles, searchVehicles, addVehicle, purchaseVehicle, restockVehicle, updateVehicle, deleteVehicle, getUserRole } from '../api';
 import VehicleModal from './VehicleModal';
-import { Search, Plus, LogOut, Car, ShoppingCart, ArchiveRestore } from 'lucide-react';
+import { Search, Plus, LogOut, Car, ShoppingCart, ArchiveRestore, Edit, Trash2 } from 'lucide-react';
 
 export default function Dashboard({ onLogout }) {
     const [vehicles, setVehicles] = useState([]);
@@ -11,6 +11,7 @@ export default function Dashboard({ onLogout }) {
     const [searchMinPrice, setSearchMinPrice] = useState('');
     const [searchMaxPrice, setSearchMaxPrice] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingVehicle, setEditingVehicle] = useState(null);
     const [error, setError] = useState('');
     
     const role = getUserRole();
@@ -45,8 +46,12 @@ export default function Dashboard({ onLogout }) {
         }
     };
 
-    const handleAddVehicle = async (vehicleData) => {
-        await addVehicle(vehicleData);
+    const handleSaveVehicle = async (vehicleData) => {
+        if (editingVehicle) {
+            await updateVehicle(editingVehicle.id, vehicleData);
+        } else {
+            await addVehicle(vehicleData);
+        }
         fetchInventory();
     };
 
@@ -68,6 +73,26 @@ export default function Dashboard({ onLogout }) {
         } catch (err) {
             alert(err.message);
         }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+        try {
+            await deleteVehicle(id);
+            fetchInventory();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const openEditModal = (vehicle) => {
+        setEditingVehicle(vehicle);
+        setIsModalOpen(true);
+    };
+
+    const openAddModal = () => {
+        setEditingVehicle(null);
+        setIsModalOpen(true);
     };
 
     return (
@@ -107,7 +132,7 @@ export default function Dashboard({ onLogout }) {
             <div className="flex justify-between items-center mb-4">
                 <h2>Current Inventory</h2>
                 {isAdmin && (
-                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+                    <button className="btn btn-primary" onClick={openAddModal}>
                         <Plus size={18} /> Add New Model
                     </button>
                 )}
@@ -135,9 +160,17 @@ export default function Dashboard({ onLogout }) {
                                 </span>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                                     {isAdmin && (
-                                        <button className="btn btn-ghost" onClick={() => handleRestock(v.id)} style={{ padding: '0.5rem' }}>
-                                            <ArchiveRestore size={16} />
-                                        </button>
+                                        <>
+                                            <button className="btn btn-ghost" onClick={() => handleRestock(v.id)} style={{ padding: '0.5rem' }} title="Restock">
+                                                <ArchiveRestore size={16} />
+                                            </button>
+                                            <button className="btn btn-ghost" onClick={() => openEditModal(v)} style={{ padding: '0.5rem' }} title="Edit">
+                                                <Edit size={16} />
+                                            </button>
+                                            <button className="btn btn-ghost" onClick={() => handleDelete(v.id)} style={{ padding: '0.5rem', color: 'var(--error-color)' }} title="Delete">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </>
                                     )}
                                     <button className="btn btn-primary" onClick={() => handlePurchase(v.id)} disabled={v.quantity <= 0}>
                                         <ShoppingCart size={16} /> Buy
@@ -156,8 +189,9 @@ export default function Dashboard({ onLogout }) {
 
             <VehicleModal 
                 isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
-                onSave={handleAddVehicle} 
+                onClose={() => { setIsModalOpen(false); setEditingVehicle(null); }} 
+                onSave={handleSaveVehicle} 
+                initialData={editingVehicle}
             />
         </div>
     );

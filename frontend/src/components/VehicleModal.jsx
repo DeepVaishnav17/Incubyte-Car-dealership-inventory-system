@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 
-export default function VehicleModal({ isOpen, onClose, onSave }) {
+export default function VehicleModal({ isOpen, onClose, onSave, initialData = null }) {
     const [make, setMake] = useState('');
     const [model, setModel] = useState('');
     const [category, setCategory] = useState('');
@@ -9,6 +9,22 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
     const [price, setPrice] = useState('');
     const [quantity, setQuantity] = useState('');
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        if (isOpen) {
+            if (initialData) {
+                setMake(initialData.make);
+                setModel(initialData.model);
+                setCategory(initialData.category);
+                setYear(initialData.year);
+                setPrice(initialData.price);
+                setQuantity(initialData.quantity);
+            } else {
+                setMake(''); setModel(''); setCategory(''); setYear(''); setPrice(''); setQuantity('');
+            }
+            setError('');
+        }
+    }, [isOpen, initialData]);
 
     if (!isOpen) return null;
 
@@ -18,6 +34,7 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
         
         try {
             await onSave({ 
+                ...(initialData?.id ? { id: initialData.id, version: initialData.version } : {}),
                 make, 
                 model, 
                 category,
@@ -25,9 +42,6 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
                 price: parseFloat(price),
                 quantity: parseInt(quantity)
             });
-            
-            // Reset and close
-            setMake(''); setModel(''); setCategory(''); setYear(''); setPrice(''); setQuantity('');
             onClose();
         } catch (err) {
             setError(err.message);
@@ -43,7 +57,7 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
         }}>
             <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
                 <div className="flex justify-between items-center mb-8">
-                    <h2>Add New Model</h2>
+                    <h2>{initialData ? 'Edit Model' : 'Add New Model'}</h2>
                     <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={onClose}>
                         <X size={20} />
                     </button>
@@ -57,7 +71,7 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
                     <input className="glass-input" placeholder="Category (e.g. Sedan)" value={category} onChange={e => setCategory(e.target.value)} required />
                     <input className="glass-input" type="number" placeholder="Year (e.g. 2024)" value={year} onChange={e => setYear(e.target.value)} required min="1886" />
                     <input className="glass-input" type="number" step="0.01" placeholder="Price" value={price} onChange={e => setPrice(e.target.value)} required min="0" />
-                    <input className="glass-input" type="number" placeholder="Initial Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} required min="0" />
+                    <input className="glass-input" type="number" placeholder="Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} required min="0" />
                     
                     <div className="flex justify-between mt-4">
                         <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
