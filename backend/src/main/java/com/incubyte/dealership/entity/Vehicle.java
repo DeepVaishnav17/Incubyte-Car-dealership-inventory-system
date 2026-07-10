@@ -10,9 +10,18 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @jakarta.validation.constraints.NotBlank(message = "Make is required")
     private String make;
+    
+    @jakarta.validation.constraints.NotBlank(message = "Model is required")
     private String model;
+    
+    @jakarta.validation.constraints.NotNull(message = "Year is required")
+    @jakarta.validation.constraints.Min(value = 1886, message = "Invalid year")
     private Integer year;
+    
+    @jakarta.validation.constraints.NotNull(message = "Price is required")
+    @jakarta.validation.constraints.Min(value = 0, message = "Price must be positive")
     private Double price;
 
     @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)

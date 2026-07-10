@@ -37,13 +37,13 @@ public class VehicleController {
     }
 
     @org.springframework.web.bind.annotation.PostMapping
-    public ResponseEntity<Vehicle> addVehicle(@org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
+    public ResponseEntity<Vehicle> addVehicle(@jakarta.validation.Valid @org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
         Vehicle savedVehicle = vehicleService.addVehicle(vehicle);
         return new ResponseEntity<>(savedVehicle, org.springframework.http.HttpStatus.CREATED);
     }
 
     @org.springframework.web.bind.annotation.PutMapping("/{id}")
-    public ResponseEntity<Vehicle> updateVehicle(@org.springframework.web.bind.annotation.PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
+    public ResponseEntity<Vehicle> updateVehicle(@org.springframework.web.bind.annotation.PathVariable Long id, @jakarta.validation.Valid @org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
         return ResponseEntity.ok(vehicleService.updateVehicle(id, vehicle));
     }
 
