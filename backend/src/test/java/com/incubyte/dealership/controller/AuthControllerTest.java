@@ -22,6 +22,14 @@ public class AuthControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private com.incubyte.dealership.repository.UserRepository userRepository;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        userRepository.deleteAll();
+    }
+
     @Test
     void registerUser_success() throws Exception {
         User user = new User();
