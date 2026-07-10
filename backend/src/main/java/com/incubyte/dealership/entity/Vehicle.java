@@ -16,6 +16,9 @@ public class Vehicle {
     @jakarta.validation.constraints.NotBlank(message = "Model is required")
     private String model;
     
+    @jakarta.validation.constraints.NotBlank(message = "Category is required")
+    private String category;
+    
     @jakarta.validation.constraints.NotNull(message = "Year is required")
     @jakarta.validation.constraints.Min(value = 1886, message = "Invalid year")
     private Integer year;
@@ -24,8 +27,12 @@ public class Vehicle {
     @jakarta.validation.constraints.Min(value = 0, message = "Price must be positive")
     private Double price;
 
-    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
-    private VehicleStatus status = VehicleStatus.AVAILABLE;
+    @jakarta.validation.constraints.NotNull(message = "Quantity is required")
+    @jakarta.validation.constraints.Min(value = 0, message = "Quantity cannot be negative")
+    private Integer quantity;
+
+    @Version
+    private Long version;
     
     // Getters and Setters
     public Long getId() { return id; }
@@ -36,6 +43,9 @@ public class Vehicle {
     
     public String getModel() { return model; }
     public void setModel(String model) { this.model = model; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
     
     public Integer getYear() { return year; }
     public void setYear(Integer year) { this.year = year; }
@@ -43,6 +53,9 @@ public class Vehicle {
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
 
-    public VehicleStatus getStatus() { return status; }
-    public void setStatus(VehicleStatus status) { this.status = status; }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }

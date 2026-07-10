@@ -19,18 +19,12 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
-    public java.util.List<Vehicle> searchVehicles(String make, String model, Integer year) {
-        Vehicle probe = new Vehicle();
-        probe.setMake(make);
-        probe.setModel(model);
-        probe.setYear(year);
-
-        org.springframework.data.domain.ExampleMatcher matcher = org.springframework.data.domain.ExampleMatcher.matching()
-                .withIgnoreNullValues()
-                .withStringMatcher(org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING)
-                .withIgnoreCase();
-
-        return vehicleRepository.findAll(org.springframework.data.domain.Example.of(probe, matcher));
+    public java.util.List<Vehicle> searchVehicles(String make, String category, Double minPrice, Double maxPrice) {
+        if (make == null) make = "";
+        if (category == null) category = "";
+        if (minPrice == null) minPrice = 0.0;
+        if (maxPrice == null) maxPrice = Double.MAX_VALUE;
+        return vehicleRepository.searchVehicles(make, category, minPrice, maxPrice);
     }
 
     public Vehicle addVehicle(Vehicle vehicle) {
@@ -42,8 +36,10 @@ public class VehicleService {
                 .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
         existingVehicle.setMake(updatedVehicle.getMake());
         existingVehicle.setModel(updatedVehicle.getModel());
+        existingVehicle.setCategory(updatedVehicle.getCategory());
         existingVehicle.setYear(updatedVehicle.getYear());
         existingVehicle.setPrice(updatedVehicle.getPrice());
+        existingVehicle.setQuantity(updatedVehicle.getQuantity());
         return vehicleRepository.save(existingVehicle);
     }
 
@@ -53,13 +49,23 @@ public class VehicleService {
         vehicleRepository.delete(vehicle);
     }
 
-    public Vehicle sellVehicle(Long id) {
+    public Vehicle purchaseVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
-        if (vehicle.getStatus() == com.incubyte.dealership.entity.VehicleStatus.SOLD) {
-            throw new com.incubyte.dealership.exception.BadRequestException("Vehicle is already sold");
+        if (vehicle.getQuantity() <= 0) {
+            throw new com.incubyte.dealership.exception.BadRequestException("Vehicle is out of stock");
         }
-        vehicle.setStatus(com.incubyte.dealership.entity.VehicleStatus.SOLD);
+        vehicle.setQuantity(vehicle.getQuantity() - 1);
+        return vehicleRepository.save(vehicle);
+    }
+
+    public Vehicle restockVehicle(Long id, int amount) {
+        if (amount <= 0) {
+            throw new com.incubyte.dealership.exception.BadRequestException("Restock amount must be positive");
+        }
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
+        vehicle.setQuantity(vehicle.getQuantity() + amount);
         return vehicleRepository.save(vehicle);
     }
 }

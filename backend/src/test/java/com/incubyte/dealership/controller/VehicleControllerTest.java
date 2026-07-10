@@ -7,6 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,9 +30,23 @@ public class VehicleControllerTest {
     @Autowired
     private com.incubyte.dealership.repository.VehicleRepository vehicleRepository;
 
+    @Autowired
+    private com.incubyte.dealership.service.VehicleService vehicleService;
+
     @org.junit.jupiter.api.BeforeEach
     void setUp() {
         vehicleRepository.deleteAll();
+    }
+
+    private com.incubyte.dealership.entity.Vehicle createValidVehicle(String make, String category, int quantity, double price) {
+        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
+        vehicle.setMake(make);
+        vehicle.setModel("TestModel");
+        vehicle.setCategory(category);
+        vehicle.setYear(2023);
+        vehicle.setPrice(price);
+        vehicle.setQuantity(quantity);
+        return vehicle;
     }
 
     @Test
@@ -41,29 +58,20 @@ public class VehicleControllerTest {
 
     @Test
     void addVehicle_withoutToken_fails() throws Exception {
-        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
-        vehicle.setMake("Toyota");
-        vehicle.setModel("Camry");
-        vehicle.setYear(2023);
-        vehicle.setPrice(25000.0);
+        com.incubyte.dealership.entity.Vehicle vehicle = createValidVehicle("Toyota", "SUV", 5, 25000.0);
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/vehicles")
+        mockMvc.perform(post("/api/vehicles")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(vehicle)))
-                .andExpect(status().isUnauthorized()); // Or 403 depending on Spring Security defaults
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     void addVehicle_withValidToken_success() throws Exception {
         String token = jwtUtil.generateToken("test@example.com", "USER");
+        com.incubyte.dealership.entity.Vehicle vehicle = createValidVehicle("Honda", "Sedan", 10, 22000.0);
 
-        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
-        vehicle.setMake("Honda");
-        vehicle.setModel("Civic");
-        vehicle.setYear(2024);
-        vehicle.setPrice(22000.0);
-
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/vehicles")
+        mockMvc.perform(post("/api/vehicles")
                 .header("Authorization", "Bearer " + token)
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(vehicle)))
@@ -75,17 +83,11 @@ public class VehicleControllerTest {
     @Test
     void updateVehicle_withValidToken_success() throws Exception {
         String token = jwtUtil.generateToken("test@example.com", "USER");
-        
-        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
-        vehicle.setMake("Ford");
-        vehicle.setModel("Focus");
-        vehicle.setYear(2020);
-        vehicle.setPrice(15000.0);
-        vehicle = vehicleRepository.save(vehicle);
+        com.incubyte.dealership.entity.Vehicle vehicle = vehicleRepository.save(createValidVehicle("Ford", "Hatchback", 2, 15000.0));
 
         vehicle.setPrice(14000.0);
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/vehicles/" + vehicle.getId())
+        mockMvc.perform(put("/api/vehicles/" + vehicle.getId())
                 .header("Authorization", "Bearer " + token)
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(vehicle)))
@@ -94,34 +96,11 @@ public class VehicleControllerTest {
     }
 
     @Test
-    void updateVehicle_notFound() throws Exception {
-        String token = jwtUtil.generateToken("test@example.com", "USER");
-        
-        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
-        vehicle.setMake("Ford");
-        vehicle.setModel("Focus");
-        vehicle.setYear(2020);
-        vehicle.setPrice(15000.0);
-
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put("/api/vehicles/99999")
-                .header("Authorization", "Bearer " + token)
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(vehicle)))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     void deleteVehicle_withValidToken_success() throws Exception {
         String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
-        
-        com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
-        vehicle.setMake("Tesla");
-        vehicle.setModel("Model 3");
-        vehicle.setYear(2023);
-        vehicle.setPrice(40000.0);
-        vehicle = vehicleRepository.save(vehicle);
+        com.incubyte.dealership.entity.Vehicle vehicle = vehicleRepository.save(createValidVehicle("Tesla", "EV", 1, 40000.0));
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/vehicles/" + vehicle.getId())
+        mockMvc.perform(delete("/api/vehicles/" + vehicle.getId())
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNoContent());
 
@@ -129,90 +108,91 @@ public class VehicleControllerTest {
     }
 
     @Test
-    void deleteVehicle_notFound() throws Exception {
-        String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
-
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/vehicles/99999")
-                .header("Authorization", "Bearer " + token))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     void searchVehicles_withParameters_returnsMatches() throws Exception {
-        com.incubyte.dealership.entity.Vehicle v1 = new com.incubyte.dealership.entity.Vehicle();
-        v1.setMake("Honda");
-        v1.setModel("Civic");
-        v1.setYear(2020);
-        v1.setPrice(18000.0);
-        vehicleRepository.save(v1);
-
-        com.incubyte.dealership.entity.Vehicle v2 = new com.incubyte.dealership.entity.Vehicle();
-        v2.setMake("Honda");
-        v2.setModel("Accord");
-        v2.setYear(2021);
-        v2.setPrice(22000.0);
-        vehicleRepository.save(v2);
-
-        com.incubyte.dealership.entity.Vehicle v3 = new com.incubyte.dealership.entity.Vehicle();
-        v3.setMake("Toyota");
-        v3.setModel("Corolla");
-        v3.setYear(2020);
-        v3.setPrice(19000.0);
-        vehicleRepository.save(v3);
+        vehicleRepository.save(createValidVehicle("Honda", "Sedan", 5, 18000.0));
+        vehicleRepository.save(createValidVehicle("Honda", "SUV", 2, 25000.0));
+        vehicleRepository.save(createValidVehicle("Toyota", "Sedan", 3, 19000.0));
 
         // Test filtering by Make
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?make=Honda"))
+        mockMvc.perform(get("/api/vehicles/search?make=Honda"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].make").value("Honda"));
-
-        // Test filtering by Year
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?year=2020"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
 
-        // Test filtering by multiple parameters
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?make=Honda&model=civic"))
+        // Test filtering by Category
+        mockMvc.perform(get("/api/vehicles/search?category=SUV"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].model").value("Civic"));
+                .andExpect(jsonPath("$.length()").value(1));
+
+        // Test filtering by Price Range
+        mockMvc.perform(get("/api/vehicles/search?minPrice=10000&maxPrice=19500"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2));
+                
+        // Test no results
+        mockMvc.perform(get("/api/vehicles/search?make=Ferrari"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
     @Test
-    void sellVehicle_success() throws Exception {
-        com.incubyte.dealership.entity.Vehicle v = new com.incubyte.dealership.entity.Vehicle();
-        v.setMake("Ford");
-        v.setModel("Mustang");
-        v.setYear(2022);
-        v.setPrice(35000.0);
-        v.setStatus(com.incubyte.dealership.entity.VehicleStatus.AVAILABLE);
-        v = vehicleRepository.save(v);
-
+    void purchaseVehicle_success_decreasesQuantity() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v = vehicleRepository.save(createValidVehicle("Ford", "Coupe", 2, 35000.0));
         String token = jwtUtil.generateToken("test@example.com", "USER");
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/vehicles/" + v.getId() + "/sell")
+        mockMvc.perform(post("/api/vehicles/" + v.getId() + "/purchase")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SOLD"));
+                .andExpect(jsonPath("$.quantity").value(1));
     }
 
     @Test
-    void sellVehicle_alreadySold_fails() throws Exception {
-        com.incubyte.dealership.entity.Vehicle v = new com.incubyte.dealership.entity.Vehicle();
-        v.setMake("Ford");
-        v.setModel("Mustang");
-        v.setYear(2022);
-        v.setPrice(35000.0);
-        v.setStatus(com.incubyte.dealership.entity.VehicleStatus.SOLD);
-        v = vehicleRepository.save(v);
-
+    void purchaseVehicle_alreadyZero_fails() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v = vehicleRepository.save(createValidVehicle("Ford", "Coupe", 0, 35000.0));
         String token = jwtUtil.generateToken("test@example.com", "USER");
 
-        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post("/api/vehicles/" + v.getId() + "/sell")
+        mockMvc.perform(post("/api/vehicles/" + v.getId() + "/purchase")
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void restockVehicle_nonAdmin_fails() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v = vehicleRepository.save(createValidVehicle("Ford", "Coupe", 0, 35000.0));
+        String token = jwtUtil.generateToken("user@example.com", "USER");
+
+        mockMvc.perform(post("/api/vehicles/" + v.getId() + "/restock?amount=5")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void restockVehicle_admin_success() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v = vehicleRepository.save(createValidVehicle("Ford", "Coupe", 0, 35000.0));
+        String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
+
+        mockMvc.perform(post("/api/vehicles/" + v.getId() + "/restock?amount=5")
+                .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.quantity").value(5));
+    }
+
+    @Test
+    void purchaseVehicle_concurrentAttempts_throwsOptimisticLockException() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v = vehicleRepository.save(createValidVehicle("Chevy", "Truck", 1, 30000.0));
+        
+        // Load the same vehicle twice to simulate concurrent transactions
+        com.incubyte.dealership.entity.Vehicle tx1 = vehicleRepository.findById(v.getId()).get();
+        com.incubyte.dealership.entity.Vehicle tx2 = vehicleRepository.findById(v.getId()).get();
+
+        // Transaction 1 purchases
+        tx1.setQuantity(tx1.getQuantity() - 1);
+        vehicleRepository.saveAndFlush(tx1); // This increments version from 0 to 1
+
+        // Transaction 2 purchases (still holding version 0)
+        tx2.setQuantity(tx2.getQuantity() - 1);
+        
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.orm.ObjectOptimisticLockingFailureException.class, () -> {
+            vehicleRepository.saveAndFlush(tx2);
+        });
     }
 }

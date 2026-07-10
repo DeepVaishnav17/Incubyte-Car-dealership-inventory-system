@@ -54,11 +54,12 @@ export const getVehicles = async () => {
     return handleResponse(res);
 };
 
-export const searchVehicles = async (make, model, year) => {
+export const searchVehicles = async (make, category, minPrice, maxPrice) => {
     const params = new URLSearchParams();
     if (make) params.append('make', make);
-    if (model) params.append('model', model);
-    if (year) params.append('year', year);
+    if (category) params.append('category', category);
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
     
     const query = params.toString() ? `?${params.toString()}` : '';
     const res = await fetch(`${BASE_URL}/vehicles/search${query}`, { headers: getHeaders() });
@@ -74,8 +75,16 @@ export const addVehicle = async (vehicle) => {
     return handleResponse(res);
 };
 
-export const sellVehicle = async (id) => {
-    const res = await fetch(`${BASE_URL}/vehicles/${id}/sell`, {
+export const purchaseVehicle = async (id) => {
+    const res = await fetch(`${BASE_URL}/vehicles/${id}/purchase`, {
+        method: 'POST',
+        headers: getHeaders()
+    });
+    return handleResponse(res);
+};
+
+export const restockVehicle = async (id, amount) => {
+    const res = await fetch(`${BASE_URL}/vehicles/${id}/restock?amount=${amount}`, {
         method: 'POST',
         headers: getHeaders()
     });

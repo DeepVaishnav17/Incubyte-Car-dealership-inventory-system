@@ -31,9 +31,10 @@ public class VehicleController {
     @org.springframework.web.bind.annotation.GetMapping("/search")
     public ResponseEntity<java.util.List<Vehicle>> searchVehicles(
             @org.springframework.web.bind.annotation.RequestParam(required = false) String make,
-            @org.springframework.web.bind.annotation.RequestParam(required = false) String model,
-            @org.springframework.web.bind.annotation.RequestParam(required = false) Integer year) {
-        return ResponseEntity.ok(vehicleService.searchVehicles(make, model, year));
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String category,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Double minPrice,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Double maxPrice) {
+        return ResponseEntity.ok(vehicleService.searchVehicles(make, category, minPrice, maxPrice));
     }
 
     @org.springframework.web.bind.annotation.PostMapping
@@ -53,8 +54,13 @@ public class VehicleController {
         return ResponseEntity.noContent().build();
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/{id}/sell")
-    public ResponseEntity<Vehicle> sellVehicle(@org.springframework.web.bind.annotation.PathVariable Long id) {
-        return ResponseEntity.ok(vehicleService.sellVehicle(id));
+    @org.springframework.web.bind.annotation.PostMapping("/{id}/purchase")
+    public ResponseEntity<Vehicle> purchaseVehicle(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        return ResponseEntity.ok(vehicleService.purchaseVehicle(id));
+    }
+
+    @org.springframework.web.bind.annotation.PostMapping("/{id}/restock")
+    public ResponseEntity<Vehicle> restockVehicle(@org.springframework.web.bind.annotation.PathVariable Long id, @org.springframework.web.bind.annotation.RequestParam int amount) {
+        return ResponseEntity.ok(vehicleService.restockVehicle(id, amount));
     }
 }

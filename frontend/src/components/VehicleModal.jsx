@@ -4,8 +4,10 @@ import { X, Save } from 'lucide-react';
 export default function VehicleModal({ isOpen, onClose, onSave }) {
     const [make, setMake] = useState('');
     const [model, setModel] = useState('');
+    const [category, setCategory] = useState('');
     const [year, setYear] = useState('');
     const [price, setPrice] = useState('');
+    const [quantity, setQuantity] = useState('');
     const [error, setError] = useState('');
 
     if (!isOpen) return null;
@@ -18,12 +20,14 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
             await onSave({ 
                 make, 
                 model, 
+                category,
                 year: parseInt(year), 
-                price: parseFloat(price) 
+                price: parseFloat(price),
+                quantity: parseInt(quantity)
             });
             
             // Reset and close
-            setMake(''); setModel(''); setYear(''); setPrice('');
+            setMake(''); setModel(''); setCategory(''); setYear(''); setPrice(''); setQuantity('');
             onClose();
         } catch (err) {
             setError(err.message);
@@ -39,7 +43,7 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
         }}>
             <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '2rem' }}>
                 <div className="flex justify-between items-center mb-8">
-                    <h2>Restock Vehicle</h2>
+                    <h2>Add New Model</h2>
                     <button className="btn btn-ghost" style={{ padding: '0.5rem' }} onClick={onClose}>
                         <X size={20} />
                     </button>
@@ -50,8 +54,10 @@ export default function VehicleModal({ isOpen, onClose, onSave }) {
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <input className="glass-input" placeholder="Make (e.g. Toyota)" value={make} onChange={e => setMake(e.target.value)} required />
                     <input className="glass-input" placeholder="Model (e.g. Camry)" value={model} onChange={e => setModel(e.target.value)} required />
+                    <input className="glass-input" placeholder="Category (e.g. Sedan)" value={category} onChange={e => setCategory(e.target.value)} required />
                     <input className="glass-input" type="number" placeholder="Year (e.g. 2024)" value={year} onChange={e => setYear(e.target.value)} required min="1886" />
                     <input className="glass-input" type="number" step="0.01" placeholder="Price" value={price} onChange={e => setPrice(e.target.value)} required min="0" />
+                    <input className="glass-input" type="number" placeholder="Initial Quantity" value={quantity} onChange={e => setQuantity(e.target.value)} required min="0" />
                     
                     <div className="flex justify-between mt-4">
                         <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>

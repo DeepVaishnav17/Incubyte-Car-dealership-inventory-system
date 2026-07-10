@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { getVehicles, searchVehicles, addVehicle, sellVehicle } from '../api';
+import { getVehicles, searchVehicles, addVehicle, purchaseVehicle, restockVehicle } from '../api';
 import VehicleModal from './VehicleModal';
-import { Search, Plus, LogOut, Car, Tag } from 'lucide-react';
+import { Search, Plus, LogOut, Car, ShoppingCart, ArchiveRestore } from 'lucide-react';
 
 export default function Dashboard({ onLogout }) {
     const [vehicles, setVehicles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchMake, setSearchMake] = useState('');
-    const [searchModel, setSearchModel] = useState('');
+    const [searchCategory, setSearchCategory] = useState('');
+    const [searchMinPrice, setSearchMinPrice] = useState('');
+    const [searchMaxPrice, setSearchMaxPrice] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState('');
 
@@ -31,7 +33,7 @@ export default function Dashboard({ onLogout }) {
         e.preventDefault();
         setLoading(true);
         try {
-            const data = await searchVehicles(searchMake, searchModel, '');
+            const data = await searchVehicles(searchMake, searchCategory, searchMinPrice, searchMaxPrice);
             setVehicles(data);
         } catch (err) {
             setError('Search failed');
@@ -45,9 +47,20 @@ export default function Dashboard({ onLogout }) {
         fetchInventory();
     };
 
-    const handleSell = async (id) => {
+    const handlePurchase = async (id) => {
         try {
-            await sellVehicle(id);
+            await purchaseVehicle(id);
+            fetchInventory();
+        } catch (err) {
+            alert(err.message);
+        }
+    };
+
+    const handleRestock = async (id) => {
+        const amount = prompt("Enter amount to restock:", "5");
+        if (!amount || isNaN(amount)) return;
+        try {
+            await restockVehicle(id, parseInt(amount));
             fetchInventory();
         } catch (err) {
             alert(err.message);
@@ -67,16 +80,22 @@ export default function Dashboard({ onLogout }) {
 
             <div className="glass-panel mb-8" style={{ padding: '1.5rem' }}>
                 <form onSubmit={handleSearch} className="flex gap-4 items-center" style={{ flexWrap: 'wrap' }}>
-                    <div style={{ flex: 1, minWidth: '200px' }}>
-                        <input className="glass-input" placeholder="Search Make..." value={searchMake} onChange={e => setSearchMake(e.target.value)} />
+                    <div style={{ flex: 1, minWidth: '150px' }}>
+                        <input className="glass-input" placeholder="Make..." value={searchMake} onChange={e => setSearchMake(e.target.value)} />
                     </div>
-                    <div style={{ flex: 1, minWidth: '200px' }}>
-                        <input className="glass-input" placeholder="Search Model..." value={searchModel} onChange={e => setSearchModel(e.target.value)} />
+                    <div style={{ flex: 1, minWidth: '150px' }}>
+                        <input className="glass-input" placeholder="Category..." value={searchCategory} onChange={e => setSearchCategory(e.target.value)} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: '100px' }}>
+                        <input type="number" className="glass-input" placeholder="Min $" value={searchMinPrice} onChange={e => setSearchMinPrice(e.target.value)} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: '100px' }}>
+                        <input type="number" className="glass-input" placeholder="Max $" value={searchMaxPrice} onChange={e => setSearchMaxPrice(e.target.value)} />
                     </div>
                     <button type="submit" className="btn btn-primary">
                         <Search size={18} /> Search
                     </button>
-                    <button type="button" className="btn btn-ghost" onClick={() => { setSearchMake(''); setSearchModel(''); fetchInventory(); }}>
+                    <button type="button" className="btn btn-ghost" onClick={() => { setSearchMake(''); setSearchCategory(''); setSearchMinPrice(''); setSearchMaxPrice(''); fetchInventory(); }}>
                         Clear
                     </button>
                 </form>
@@ -85,7 +104,7 @@ export default function Dashboard({ onLogout }) {
             <div className="flex justify-between items-center mb-4">
                 <h2>Current Inventory</h2>
                 <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                    <Plus size={18} /> Restock Vehicle
+                    <Plus size={18} /> Add New Model
                 </button>
             </div>
 
@@ -99,19 +118,24 @@ export default function Dashboard({ onLogout }) {
                         <div key={v.id} className="glass-panel vehicle-card">
                             <div className="vehicle-header">
                                 <h3 style={{ margin: 0, fontSize: '1.25rem' }}>{v.year} {v.make}</h3>
-                                <span className={`badge ${v.status}`}>{v.status}</span>
+                                <span className={`badge`} style={{ background: v.quantity > 0 ? 'rgba(46, 204, 113, 0.2)' : 'rgba(231, 76, 60, 0.2)', color: v.quantity > 0 ? 'var(--success-color)' : 'var(--error-color)' }}>
+                                    Stock: {v.quantity}
+                                </span>
                             </div>
-                            <p className="text-muted" style={{ fontSize: '1.1rem', margin: 0 }}>{v.model}</p>
+                            <p className="text-muted" style={{ fontSize: '1.1rem', margin: '0.25rem 0 0 0' }}>{v.model} ({v.category})</p>
                             
-                            <div className="flex justify-between items-center" style={{ marginTop: 'auto', paddingTop: '1rem' }}>
+                            <div className="flex justify-between items-center" style={{ marginTop: 'auto', paddingTop: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                                 <span style={{ fontSize: '1.5rem', fontWeight: '700', color: 'var(--success-color)' }}>
                                     ${v.price.toLocaleString()}
                                 </span>
-                                {v.status === 'AVAILABLE' && (
-                                    <button className="btn btn-danger" onClick={() => handleSell(v.id)}>
-                                        <Tag size={16} /> Sell
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                    <button className="btn btn-ghost" onClick={() => handleRestock(v.id)} style={{ padding: '0.5rem' }}>
+                                        <ArchiveRestore size={16} />
                                     </button>
-                                )}
+                                    <button className="btn btn-primary" onClick={() => handlePurchase(v.id)} disabled={v.quantity <= 0}>
+                                        <ShoppingCart size={16} /> Buy
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
