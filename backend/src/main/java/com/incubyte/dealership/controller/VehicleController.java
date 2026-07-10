@@ -23,4 +23,10 @@ public class VehicleController {
     public ResponseEntity<List<Vehicle>> getVehicles() {
         return ResponseEntity.ok(vehicleService.getAllVehicles());
     }
+
+    @org.springframework.web.bind.annotation.PostMapping
+    public ResponseEntity<Vehicle> addVehicle(@org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
+        Vehicle savedVehicle = vehicleService.addVehicle(vehicle);
+        return new ResponseEntity<>(savedVehicle, org.springframework.http.HttpStatus.CREATED);
+    }
 }
