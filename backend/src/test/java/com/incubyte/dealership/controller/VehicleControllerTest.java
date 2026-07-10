@@ -112,7 +112,7 @@ public class VehicleControllerTest {
 
     @Test
     void deleteVehicle_withValidToken_success() throws Exception {
-        String token = jwtUtil.generateToken("test@example.com", "USER");
+        String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
         
         com.incubyte.dealership.entity.Vehicle vehicle = new com.incubyte.dealership.entity.Vehicle();
         vehicle.setMake("Tesla");
@@ -130,7 +130,7 @@ public class VehicleControllerTest {
 
     @Test
     void deleteVehicle_notFound() throws Exception {
-        String token = jwtUtil.generateToken("test@example.com", "USER");
+        String token = jwtUtil.generateToken("admin@example.com", "ADMIN");
 
         mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete("/api/vehicles/99999")
                 .header("Authorization", "Bearer " + token))
