@@ -22,4 +22,21 @@ public class VehicleService {
     public Vehicle addVehicle(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
     }
+
+    public Vehicle updateVehicle(Long id, Vehicle updatedVehicle) {
+        Vehicle existingVehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
+        existingVehicle.setMake(updatedVehicle.getMake());
+        existingVehicle.setModel(updatedVehicle.getModel());
+        existingVehicle.setYear(updatedVehicle.getYear());
+        existingVehicle.setPrice(updatedVehicle.getPrice());
+        return vehicleRepository.save(existingVehicle);
+    }
+
+    public void deleteVehicle(Long id) {
+        if (!vehicleRepository.existsById(id)) {
+            throw new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found");
+        }
+        vehicleRepository.deleteById(id);
+    }
 }

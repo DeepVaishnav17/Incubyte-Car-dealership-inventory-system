@@ -29,4 +29,15 @@ public class VehicleController {
         Vehicle savedVehicle = vehicleService.addVehicle(vehicle);
         return new ResponseEntity<>(savedVehicle, org.springframework.http.HttpStatus.CREATED);
     }
+
+    @org.springframework.web.bind.annotation.PutMapping("/{id}")
+    public ResponseEntity<Vehicle> updateVehicle(@org.springframework.web.bind.annotation.PathVariable Long id, @org.springframework.web.bind.annotation.RequestBody Vehicle vehicle) {
+        return ResponseEntity.ok(vehicleService.updateVehicle(id, vehicle));
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicle(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        vehicleService.deleteVehicle(id);
+        return ResponseEntity.noContent().build();
+    }
 }
