@@ -2,12 +2,15 @@ package com.incubyte.dealership.controller;
 
 import com.incubyte.dealership.entity.User;
 import com.incubyte.dealership.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "User Authentication APIs")
 public class AuthController {
     
     private final AuthService authService;

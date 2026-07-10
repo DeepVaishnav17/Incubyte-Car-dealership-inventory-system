@@ -2,6 +2,8 @@ package com.incubyte.dealership.controller;
 
 import com.incubyte.dealership.entity.Vehicle;
 import com.incubyte.dealership.service.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vehicles")
+@Tag(name = "Vehicles", description = "Vehicle management APIs")
 public class VehicleController {
     
     private final VehicleService vehicleService;
@@ -20,6 +23,7 @@ public class VehicleController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all vehicles")
     public ResponseEntity<List<Vehicle>> getVehicles() {
         return ResponseEntity.ok(vehicleService.getAllVehicles());
     }
