@@ -81,6 +81,18 @@ public class VehicleControllerTest {
     }
 
     @Test
+    void addVehicle_withInvalidPayload_returnsBadRequest() throws Exception {
+        String token = jwtUtil.generateToken("test@example.com", "USER");
+        com.incubyte.dealership.entity.Vehicle invalidVehicle = createValidVehicle("", "Sedan", -5, -22000.0); // Blank make, negative quantity and price
+
+        mockMvc.perform(post("/api/vehicles")
+                .header("Authorization", "Bearer " + token)
+                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(invalidVehicle)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void updateVehicle_withValidToken_success() throws Exception {
         String token = jwtUtil.generateToken("test@example.com", "USER");
         com.incubyte.dealership.entity.Vehicle vehicle = vehicleRepository.save(createValidVehicle("Ford", "Hatchback", 2, 15000.0));
