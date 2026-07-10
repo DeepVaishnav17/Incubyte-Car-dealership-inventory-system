@@ -48,9 +48,18 @@ public class VehicleService {
     }
 
     public void deleteVehicle(Long id) {
-        if (!vehicleRepository.existsById(id)) {
-            throw new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found");
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
+        vehicleRepository.delete(vehicle);
+    }
+
+    public Vehicle sellVehicle(Long id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new com.incubyte.dealership.exception.ResourceNotFoundException("Vehicle not found"));
+        if (vehicle.getStatus() == com.incubyte.dealership.entity.VehicleStatus.SOLD) {
+            throw new com.incubyte.dealership.exception.BadRequestException("Vehicle is already sold");
         }
-        vehicleRepository.deleteById(id);
+        vehicle.setStatus(com.incubyte.dealership.entity.VehicleStatus.SOLD);
+        return vehicleRepository.save(vehicle);
     }
 }

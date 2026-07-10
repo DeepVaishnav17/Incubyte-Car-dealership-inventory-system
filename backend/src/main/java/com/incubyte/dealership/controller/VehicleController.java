@@ -48,4 +48,9 @@ public class VehicleController {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.noContent().build();
     }
+
+    @org.springframework.web.bind.annotation.PostMapping("/{id}/sell")
+    public ResponseEntity<Vehicle> sellVehicle(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        return ResponseEntity.ok(vehicleService.sellVehicle(id));
+    }
 }

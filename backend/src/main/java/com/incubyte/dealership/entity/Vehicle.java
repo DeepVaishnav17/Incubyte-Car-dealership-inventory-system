@@ -14,6 +14,9 @@ public class Vehicle {
     private String model;
     private Integer year;
     private Double price;
+
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private VehicleStatus status = VehicleStatus.AVAILABLE;
     
     // Getters and Setters
     public Long getId() { return id; }
@@ -30,4 +33,7 @@ public class Vehicle {
     
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
+    public VehicleStatus getStatus() { return status; }
+    public void setStatus(VehicleStatus status) { this.status = status; }
 }
