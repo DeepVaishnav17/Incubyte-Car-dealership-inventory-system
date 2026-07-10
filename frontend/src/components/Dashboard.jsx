@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getVehicles, searchVehicles, addVehicle, purchaseVehicle, restockVehicle } from '../api';
+import { getVehicles, searchVehicles, addVehicle, purchaseVehicle, restockVehicle, getUserRole } from '../api';
 import VehicleModal from './VehicleModal';
 import { Search, Plus, LogOut, Car, ShoppingCart, ArchiveRestore } from 'lucide-react';
 
@@ -12,6 +12,9 @@ export default function Dashboard({ onLogout }) {
     const [searchMaxPrice, setSearchMaxPrice] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState('');
+    
+    const role = getUserRole();
+    const isAdmin = role === 'ADMIN';
 
     const fetchInventory = async () => {
         setLoading(true);
@@ -103,9 +106,11 @@ export default function Dashboard({ onLogout }) {
 
             <div className="flex justify-between items-center mb-4">
                 <h2>Current Inventory</h2>
-                <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
-                    <Plus size={18} /> Add New Model
-                </button>
+                {isAdmin && (
+                    <button className="btn btn-primary" onClick={() => setIsModalOpen(true)}>
+                        <Plus size={18} /> Add New Model
+                    </button>
+                )}
             </div>
 
             {error && <div className="error-message">{error}</div>}
@@ -129,9 +134,11 @@ export default function Dashboard({ onLogout }) {
                                     ${v.price.toLocaleString()}
                                 </span>
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                    <button className="btn btn-ghost" onClick={() => handleRestock(v.id)} style={{ padding: '0.5rem' }}>
-                                        <ArchiveRestore size={16} />
-                                    </button>
+                                    {isAdmin && (
+                                        <button className="btn btn-ghost" onClick={() => handleRestock(v.id)} style={{ padding: '0.5rem' }}>
+                                            <ArchiveRestore size={16} />
+                                        </button>
+                                    )}
                                     <button className="btn btn-primary" onClick={() => handlePurchase(v.id)} disabled={v.quantity <= 0}>
                                         <ShoppingCart size={16} /> Buy
                                     </button>
