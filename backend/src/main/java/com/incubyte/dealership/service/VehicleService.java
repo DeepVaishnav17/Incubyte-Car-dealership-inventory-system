@@ -19,6 +19,20 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
+    public java.util.List<Vehicle> searchVehicles(String make, String model, Integer year) {
+        Vehicle probe = new Vehicle();
+        probe.setMake(make);
+        probe.setModel(model);
+        probe.setYear(year);
+
+        org.springframework.data.domain.ExampleMatcher matcher = org.springframework.data.domain.ExampleMatcher.matching()
+                .withIgnoreNullValues()
+                .withStringMatcher(org.springframework.data.domain.ExampleMatcher.StringMatcher.CONTAINING)
+                .withIgnoreCase();
+
+        return vehicleRepository.findAll(org.springframework.data.domain.Example.of(probe, matcher));
+    }
+
     public Vehicle addVehicle(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
     }

@@ -136,4 +136,48 @@ public class VehicleControllerTest {
                 .header("Authorization", "Bearer " + token))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void searchVehicles_withParameters_returnsMatches() throws Exception {
+        com.incubyte.dealership.entity.Vehicle v1 = new com.incubyte.dealership.entity.Vehicle();
+        v1.setMake("Honda");
+        v1.setModel("Civic");
+        v1.setYear(2020);
+        v1.setPrice(18000.0);
+        vehicleRepository.save(v1);
+
+        com.incubyte.dealership.entity.Vehicle v2 = new com.incubyte.dealership.entity.Vehicle();
+        v2.setMake("Honda");
+        v2.setModel("Accord");
+        v2.setYear(2021);
+        v2.setPrice(22000.0);
+        vehicleRepository.save(v2);
+
+        com.incubyte.dealership.entity.Vehicle v3 = new com.incubyte.dealership.entity.Vehicle();
+        v3.setMake("Toyota");
+        v3.setModel("Corolla");
+        v3.setYear(2020);
+        v3.setPrice(19000.0);
+        vehicleRepository.save(v3);
+
+        // Test filtering by Make
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?make=Honda"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].make").value("Honda"));
+
+        // Test filtering by Year
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?year=2020"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+
+        // Test filtering by multiple parameters
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get("/api/vehicles/search?make=Honda&model=civic"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].model").value("Civic"));
+    }
 }
