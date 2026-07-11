@@ -99,7 +99,7 @@ export default function Dashboard({ onLogout }) {
         <div className="container">
             <nav className="flex justify-between items-center mb-8 glass-panel" style={{ padding: '1rem 2rem' }}>
                 <h1 className="text-gradient flex items-center gap-4" style={{ margin: 0 }}>
-                    <Car /> Dealership Admin
+                    <Car /> {isAdmin ? 'Dealership Admin' : 'Dealership Dashboard'}
                 </h1>
                 <button className="btn btn-ghost" onClick={onLogout}>
                     <LogOut size={18} /> Logout
