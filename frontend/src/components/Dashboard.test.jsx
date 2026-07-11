@@ -28,7 +28,8 @@ describe('Dashboard Component', () => {
         api.getUserRole.mockReturnValue('USER');
         
         render(<Dashboard onLogout={() => {}} />);
-        expect(screen.getByText('Loading...')).toBeDefined();
+        // Skeleton cards are shown — page header should be visible
+        expect(screen.getByText('Vehicle Inventory')).toBeDefined();
     });
 
     it('renders vehicle list correctly', async () => {
@@ -42,12 +43,12 @@ describe('Dashboard Component', () => {
         render(<Dashboard onLogout={() => {}} />);
 
         // Wait for vehicles to load
-        const toyotaHeading = await screen.findByText('2024 Toyota');
+        const toyotaHeading = await screen.findByText('Toyota Camry');
         expect(toyotaHeading).toBeDefined();
-        expect(screen.getByText('2023 Honda')).toBeDefined();
+        expect(screen.getByText('Honda Civic')).toBeDefined();
         
-        // Ensure "Add New Model" is NOT visible for regular USER
-        expect(screen.queryByText('Add New Model')).toBeNull();
+        // Ensure "Add Vehicle" is NOT visible for regular USER
+        expect(screen.queryByText('Add Vehicle')).toBeNull();
     });
 
     it('disables purchase button when quantity is 0', async () => {
@@ -59,9 +60,9 @@ describe('Dashboard Component', () => {
 
         render(<Dashboard onLogout={() => {}} />);
 
-        await screen.findByText('2023 Honda'); // wait for load
+        await screen.findByText('Honda Civic'); // wait for load
         
-        const buyButtons = screen.getAllByRole('button', { name: /Buy/i });
+        const buyButtons = screen.getAllByRole('button', { name: /Unavailable/i });
         expect(buyButtons[0].hasAttribute('disabled')).toBe(true);
     });
 
@@ -71,8 +72,8 @@ describe('Dashboard Component', () => {
 
         render(<Dashboard onLogout={() => {}} />);
 
-        await screen.findByText('No vehicles found.'); // wait for load
+        await screen.findByText('No vehicles found'); // wait for load
 
-        expect(screen.getByText('Add New Model')).toBeDefined();
+        expect(screen.getByText('Add Vehicle')).toBeDefined();
     });
 });
