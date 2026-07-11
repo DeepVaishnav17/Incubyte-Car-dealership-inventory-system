@@ -62,8 +62,8 @@ export default function Footer() {
                         </p>
                         {/* Contact info */}
                         {[
-                            { icon: MapPin, text: 'Mumbai, Maharashtra, India' },
-                            { icon: Phone, text: '+91 98765 43210' },
+                            { icon: MapPin, text: 'Ahmedabad, Gujarat, India' },
+                            { icon: Phone, text: '+91 7043041707' },
                             { icon: Mail, text: 'hello@incubyte.co' },
                         ].map(({ icon: Icon, text }) => (
                             <div key={text} style={{
