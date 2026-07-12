@@ -184,32 +184,27 @@ From the project root:
 docker compose up --build
 ```
 
-
 # Screenshots
-
-## Login Page
-
-Insert screenshot here.
 
 ## Registration
 
-Insert screenshot here.
+![Login Page](assets/register.png)
 
 ## Vehicle Dashboard
 
-Insert screenshot here.
+![Vehicle Dashboard](assets/vehicles_page.png)
 
 ## Admin Dashboard
 
-Insert screenshot here.
+![Admin Dashboard](assets/admindashboard.png)
 
 ## Add Vehicle
 
-Insert screenshot here.
+![Add Vehicle](assets/addnew.png)
 
 ## Search Vehicles
 
-Insert screenshot here.
+![Add Vehicle](assets/search.png)
 
 ---
 
