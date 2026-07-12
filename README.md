@@ -1,69 +1,295 @@
 # Car Dealership Inventory System
 
-## Project Overview
+A full-stack Car Dealership Inventory System built as part of the Incubyte Full Stack Assessment. The application provides inventory management, user authentication, role-based authorization, vehicle purchasing, and inventory restocking through a RESTful API and a modern React frontend.
 
-A full-stack Modular Monolith application for managing a car dealership's inventory.
+## Live Demo
 
-- **Backend:** Java 21, Spring Boot 3, Spring Security (JWT), Spring Data JPA, PostgreSQL
-- **Frontend:** React 19, Vite, Vanilla CSS (Glassmorphism design)
-- **Deployment:** Docker & Docker Compose
+Frontend: https://incubyte-car-dealership-inventory-s.vercel.app/
 
-## Setup Instructions
+Backend: https://incubyte-car-dealership-inventory-system.onrender.com
 
-### Prerequisites
+## Features
 
-- Docker & Docker Compose
+### Authentication
 
-### Running the Application
+- User registration
+- User login with JWT authentication
+- BCrypt password hashing
+- Role-based authorization (Admin/User)
 
-To run the entire full-stack application in a production-ready environment:
+### Vehicle Management
 
-1. Open a terminal in the root directory.
-2. Run: `docker-compose up --build`
-3. Access the frontend at `http://localhost`
-4. Access the backend API at `http://localhost:8080/api`
+- View all vehicles
+- Search vehicles by make, category, and price range
+- Add new vehicles (Admin)
+- Update vehicle details (Admin)
+- Delete vehicles (Admin)
+- Purchase vehicles
+- Restock inventory (Admin)
 
-## API Docs
+### Technical Features
 
-Once the backend is running, you can view the fully interactive OpenAPI/Swagger documentation at:
+- RESTful API
+- JWT Authentication
+- PostgreSQL Database
+- Docker support
+- CI using GitHub Actions
+- Swagger API documentation
+- Production deployment using Render and Vercel
 
-- `http://localhost:8080/swagger-ui.html`
+---
 
-## Live Deployment (Phase 7)
+# Technology Stack
 
-The application is configured for deployment on free-tier platforms.
+## Backend
 
-### Backend (Render)
+- Java 21
+- Spring Boot 3
+- Spring Security
+- Spring Data JPA
+- PostgreSQL
+- JWT
+- Maven
+- Docker
 
-1. Sign in to [Render](https://render.com/).
-2. Connect your GitHub repository. Render will automatically detect the `render.yaml` file.
-3. It will spin up the PostgreSQL database and the Spring Boot backend seamlessly.
+## Frontend
 
-**Live Backend URL:** _(Replace with your Render URL)_
+- React
+- Vite
+- JavaScript
+- CSS
 
-### Frontend (Vercel)
+## DevOps
 
-1. Sign in to [Vercel](https://vercel.com/).
-2. Import the `frontend` folder from your repository.
-3. In the Vercel project settings, add an Environment Variable:
-   - `VITE_API_URL` = _(Your Render Backend URL)_
-4. The provided `vercel.json` ensures that React Router works perfectly.
+- Docker
+- Docker Compose
+- GitHub Actions
+- Render
+- Vercel
 
-**Live Frontend URL:** _(Replace with your Vercel URL)_
+---
 
-## Test Report
+# Project Structure
 
-The backend is built using strict Test-Driven Development (TDD) principles.
-To run the test suite and generate a Jacoco code coverage report:
+```
+.
+├── backend
+│   ├── src
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── mvnw
+│
+├── frontend
+│   ├── src
+│   ├── Dockerfile
+│   ├── package.json
+│   └── vercel.json
+│
+├── docker-compose.yml
+├── render.yaml
+├── postman_collection.json
+└── README.md
+```
 
-1. Navigate to the `backend/` directory: `cd backend`
-2. Run tests: `./mvnw clean test`
-3. View the HTML report at: `backend/target/site/jacoco/index.html`
+---
 
-## My AI Usage
+# Backend Setup
 
-_(You can describe how you used AI tools to assist in this project here)_
+## Prerequisites
 
-## Screenshots
+- Java 21
+- Maven
+- PostgreSQL
 
-_(screenshots)_
+## Clone Repository
+
+```bash
+git clone https://github.com/DeepVaishnav17/Incubyte-Car-dealership-inventory-system.git
+
+cd Incubyte-Car-dealership-inventory-system
+```
+
+## Configure Environment Variables
+
+Create a `.env` file or configure the following variables:
+
+```env
+DB_URL=jdbc:postgresql://localhost:5432/dealership
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+JWT_SECRET=your_secret_key
+JWT_EXPIRATION=86400000
+```
+
+## Run Backend
+
+```bash
+cd backend
+
+./mvnw spring-boot:run
+```
+
+or
+
+```bash
+mvn spring-boot:run
+```
+
+Backend runs at
+
+```
+http://localhost:8080
+```
+
+---
+
+# Frontend Setup
+
+## Install Dependencies
+
+```bash
+cd frontend
+
+npm install
+```
+
+## Configure Environment Variable
+
+Create a `.env` file.
+
+```env
+VITE_API_URL=http://localhost:8080/api
+```
+
+## Run Frontend
+
+```bash
+npm run dev
+```
+
+Frontend runs at
+
+```
+http://localhost:5173
+```
+
+---
+
+# Running with Docker
+
+From the project root:
+
+```bash
+docker compose up --build
+```
+
+
+# Screenshots
+
+## Login Page
+
+Insert screenshot here.
+
+## Registration
+
+Insert screenshot here.
+
+## Vehicle Dashboard
+
+Insert screenshot here.
+
+## Admin Dashboard
+
+Insert screenshot here.
+
+## Add Vehicle
+
+Insert screenshot here.
+
+## Search Vehicles
+
+Insert screenshot here.
+
+---
+
+# Running Tests
+
+## Backend
+
+```bash
+cd backend
+
+mvn test
+```
+
+## Frontend
+
+```bash
+cd frontend
+
+npm test
+```
+
+---
+
+# Test Report
+
+Backend Test Summary
+
+```
+Tests Run : XX
+Passed    : XX
+Failed    : 0
+Skipped   : 0
+```
+
+Frontend Test Summary
+
+```
+Tests Run : XX
+Passed    : XX
+Failed    : 0
+Skipped   : 0
+```
+
+GitHub Actions executes the backend and frontend test suites automatically on every push to the main branch.
+
+---
+
+# Deployment
+
+Frontend
+
+https://incubyte-car-dealership-inventory-s.vercel.app/
+
+Backend
+
+https://incubyte-car-dealership-inventory-system.onrender.com
+
+
+---
+
+# My AI Usage
+
+AI tools were used throughout the development process as productivity assistants. The usage included:
+
+- Generating initial project scaffolding.
+- Assisting with Docker configuration.
+- Debugging deployment issues on Render and Vercel.
+- Improving GitHub Actions workflow configuration.
+- Explaining Spring Security and JWT authentication issues.
+- Refining API integration and frontend debugging.
+- Improving documentation and README formatting.
+
+All architecture decisions, implementation verification, debugging, testing, and final code integration were manually reviewed and validated before submission.
+
+---
+
+# Author
+
+Deep Vaishnav
+
+GitHub
+
+https://github.com/DeepVaishnav17
