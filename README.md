@@ -229,24 +229,16 @@ npm test
 ---
 
 # Test Report
+## Frontend Test Summary
 
-Backend Test Summary
-
-```
-Tests Run : XX
-Passed    : XX
-Failed    : 0
-Skipped   : 0
-```
-
-Frontend Test Summary
-
-```
-Tests Run : XX
-Passed    : XX
-Failed    : 0
-Skipped   : 0
-```
+| Metric | Result |
+|---------|--------|
+| Test Files | 2 Passed |
+| Tests Run | 7 |
+| Passed | 7 |
+| Failed | 0 |
+| Skipped | 0 |
+| Duration | 5.69s |
 
 GitHub Actions executes the backend and frontend test suites automatically on every push to the main branch.
 
