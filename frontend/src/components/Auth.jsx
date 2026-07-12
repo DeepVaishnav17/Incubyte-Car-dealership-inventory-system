@@ -63,17 +63,7 @@ export default function Auth({ onLogin }) {
                 animation: 'slideUp 0.5s cubic-bezier(0.4,0,0.2,1)',
             }}>
                 {/* Logo */}
-                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                    <div style={{
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                        width: '64px', height: '64px',
-                        background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-                        borderRadius: '20px',
-                        boxShadow: '0 0 40px rgba(59,130,246,0.3)',
-                        marginBottom: '1.25rem',
-                    }}>
-                        <Car size={30} color="white" />
-                    </div>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
                     <h1 style={{
                         fontSize: '1.75rem', fontWeight: 800,
                         letterSpacing: '-0.04em', marginBottom: '0.375rem',

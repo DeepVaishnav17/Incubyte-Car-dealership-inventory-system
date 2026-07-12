@@ -120,3 +120,25 @@ export const deleteVehicle = async (id) => {
     if (res.status === 204) return null;
     return handleResponse(res);
 };
+
+/**
+ * GET /api/purchases
+ * Admin → returns ALL purchases across all users
+ * User  → returns only their own purchase history
+ */
+export const getPurchases = async () => {
+    const res = await fetch(`${BASE_URL}/purchases`, { headers: getHeaders() });
+    return handleResponse(res);
+};
+
+export const getUserEmail = () => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub || payload.email || null;
+    } catch {
+        return null;
+    }
+};
+

@@ -15,6 +15,7 @@ vi.mock('./api', () => ({
     getVehicles: vi.fn(() => Promise.resolve([])),
     searchVehicles: vi.fn(),
     getUserRole: vi.fn(() => 'USER'),
+    getPurchases: vi.fn(() => Promise.resolve([])),
 }));
 
 describe('App Login Form', () => {

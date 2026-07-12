@@ -114,11 +114,11 @@ export default function VehicleModal({ isOpen, onClose, onSave, initialData }) {
                                     value={form.category}
                                     onChange={e => handleChange('category', e.target.value)}
                                     required
-                                    style={{ cursor: 'pointer' }}
+                                    style={{ cursor: 'pointer', background: '#06060f', color: 'var(--text)' }}
                                 >
-                                    <option value="" disabled>Select a category...</option>
+                                    <option value="" disabled style={{ background: '#06060f', color: 'var(--text-muted)' }}>Select a category...</option>
                                     {CATEGORIES.map(c => (
-                                        <option key={c} value={c}>{c}</option>
+                                        <option key={c} value={c} style={{ background: '#06060f', color: 'var(--text)' }}>{c}</option>
                                     ))}
                                 </select>
                             </div>
