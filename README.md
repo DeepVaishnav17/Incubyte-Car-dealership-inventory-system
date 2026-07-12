@@ -229,7 +229,52 @@ npm test
 ---
 
 # Test Report
-## Frontend Test Summary
+# Test Cases
+
+## Backend Test Cases
+
+| Test ID | Test Case | Expected Result |
+|---------|-----------|-----------------|
+| TC-01 | Register a new user | User is registered successfully |
+| TC-02 | Register with an existing email | Returns **400 Bad Request** |
+| TC-03 | Login with valid credentials | Returns **JWT token (200 OK)** |
+| TC-04 | Login with invalid credentials | Returns **401 Unauthorized** |
+| TC-05 | Get all vehicles | Returns vehicle list successfully |
+| TC-06 | Add vehicle without authentication | Returns **401 Unauthorized** |
+| TC-07 | Add vehicle with valid token | Vehicle is added successfully |
+| TC-08 | Add vehicle with invalid data | Returns **400 Bad Request** |
+| TC-09 | Update existing vehicle | Vehicle details are updated |
+| TC-10 | Delete vehicle | Vehicle is deleted successfully |
+| TC-11 | Search vehicles by make/category/price | Matching vehicles are returned |
+| TC-12 | Purchase available vehicle | Vehicle quantity decreases by one |
+| TC-13 | Purchase out-of-stock vehicle | Returns **400 Bad Request** |
+| TC-14 | Restock vehicle as non-admin | Returns **403 Forbidden** |
+| TC-15 | Restock vehicle as admin | Vehicle stock increases |
+| TC-16 | Concurrent purchase requests | Optimistic locking prevents inconsistent updates |
+| TC-17 | Validate invalid email | Validation error is returned |
+| TC-18 | Validate blank password | Validation error is returned |
+| TC-19 | Password hashing during registration | Password is stored in BCrypt hashed format |
+| TC-20 | Spring Boot context loads | Application starts successfully |
+
+---
+
+## Frontend Test Cases
+
+| Test ID | Test Case | Expected Result |
+|---------|-----------|-----------------|
+| TC-01 | Render login page | Login form is displayed |
+| TC-02 | Invalid login | Error message is displayed |
+| TC-03 | Successful login | User is redirected to dashboard |
+| TC-04 | Render vehicle dashboard | Vehicle list is displayed |
+| TC-05 | Display vehicle details | Vehicle information is shown correctly |
+| TC-06 | Purchase unavailable vehicle | Purchase button is disabled |
+| TC-07 | Dashboard renders correctly for user | Dashboard loads successfully |
+
+---
+
+# Test Summary
+
+## Frontend
 
 | Metric | Result |
 |---------|--------|
@@ -238,9 +283,7 @@ npm test
 | Passed | 7 |
 | Failed | 0 |
 | Skipped | 0 |
-| Duration | 5.69s |
 
-GitHub Actions executes the backend and frontend test suites automatically on every push to the main branch.
 
 ---
 
